@@ -140,7 +140,7 @@ import pickle
 from pathlib import Path
 def get_project_root():
     """Returns project root folder."""
-    return str(Path(__file__).parent.parent.parent)
+    return str(Path(__file__).parent.parent.parent.parent)
 #ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR=get_project_root()
 
@@ -1685,9 +1685,9 @@ def game_loop(args):
             RGB_Camera_im = cv2.cvtColor(Camera_image, cv2.COLOR_BGR2RGB)
 
             # Test lane dectection ,object detecion based on SSD, Yolo and Semantic Segmentation
-            #lines,size_im= lane_detectionv3(RGB_Camera_im)
+            lines,size_im= lane_detectionv3(RGB_Camera_im)
             #lines,size_im=object_detection_SSD(RGB_Camera_im)
-            lines, size_im = object_detection_Yolo(RGB_Camera_im)
+            #lines, size_im = object_detection_Yolo(RGB_Camera_im)
             #lines, size_im = object_detection_mask(RGB_Camera_im)
             #lines, size_im = lane_detectionv2(RGB_Camera_im)
 
