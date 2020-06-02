@@ -13,4 +13,6 @@ lines, size_im = object_detection_mask(RGB_Camera_im) : Semantic Segmentation ba
 
 
 
+# Inside Project shared folder
+/Phase3/Code/Models  , download the models to be used in Objecte detection
      
