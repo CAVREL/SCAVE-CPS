@@ -77,7 +77,7 @@ import math
 import random
 import re
 import weakref
-import cv2
+import cv2 as cv
 
 try:
     import pygame
@@ -160,38 +160,38 @@ def lane_detectionv1(RGB_Camera_im):
 
     #################################################
     # Now image resolution is 720x1280x3
-    size_im = cv2.resize(RGB_Camera_im, dsize=(640, 480))  # VGA resolution
-    # size_im = cv2.resize(test_im, dsize=(800, 600))  # SVGA resolution
-    # size_im = cv2.resize(test_im, dsize=(1028, 720))  # HD resolution
-    # size_im = cv2.resize(test_im, dsize=(1920, 1080))  # Full-HD resolution
-    # cv2.imshow("size_im", size_im)
+    size_im = cv.resize(RGB_Camera_im, dsize=(640, 480))  # VGA resolution
+    # size_im = cv.resize(test_im, dsize=(800, 600))  # SVGA resolution
+    # size_im = cv.resize(test_im, dsize=(1028, 720))  # HD resolution
+    # size_im = cv.resize(test_im, dsize=(1920, 1080))  # Full-HD resolution
+    # cv.imshow("size_im", size_im)
     #################################################
 
     #################################################
     # ROI Coordinates Set-up
     # roi = size_im[320:480, 213:426]  # [380:430, 330:670]   [y:y+b, x:x+a]
-    # roi_im = cv2.resize(roi, (213, 160))  # x,y
-    # cv2.imshow("roi_im", roi_im)
+    # roi_im = cv.resize(roi, (213, 160))  # x,y
+    # cv.imshow("roi_im", roi_im)
     roi = size_im[240:480, 108:532]  # [380:430, 330:670]   [y:y+b, x:x+a]
-    roi_im = cv2.resize(roi, (424, 240))  # (a of x, b of y)
-    # cv2.imshow("roi_im", roi_im)
+    roi_im = cv.resize(roi, (424, 240))  # (a of x, b of y)
+    # cv.imshow("roi_im", roi_im)
     #################################################
 
     #################################################
     # Gaussian Blur Filter
-    Blur_im = cv2.bilateralFilter(roi_im, d=-1, sigmaColor=5, sigmaSpace=5)
+    Blur_im = cv.bilateralFilter(roi_im, d=-1, sigmaColor=5, sigmaSpace=5)
     #################################################
 
     #################################################
     # Canny edge detector
-    edges = cv2.Canny(Blur_im, 50, 100)
-    # cv2.imshow("edges", edges)
+    edges = cv.Canny(Blur_im, 50, 100)
+    # cv.imshow("edges", edges)
     #################################################
 
     #################################################
     # Hough Transformation
-    # lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi / 180.0, threshold=80, minLineLength=30, maxLineGap=50)
-    lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi / 180.0, threshold=25, minLineLength=10, maxLineGap=20)
+    # lines = cv.HoughLinesP(edges, rho=1, theta=np.pi / 180.0, threshold=80, minLineLength=30, maxLineGap=50)
+    lines = cv.HoughLinesP(edges, rho=1, theta=np.pi / 180.0, threshold=25, minLineLength=10, maxLineGap=20)
 
     if lines is None:
         lines = [[0, 0, 0, 0]]
@@ -220,14 +220,14 @@ def lane_detectionv1(RGB_Camera_im):
             pt2_le = (x2 + 108, y2 + 240)
 
             if theta_atan > 20.0 and theta_atan < 90.0:
-                # cv2.line(size_im, (x1+108, y1+240), (x2+108, y2+240), (0, 255, 0), 2)
+                # cv.line(size_im, (x1+108, y1+240), (x2+108, y2+240), (0, 255, 0), 2)
 
                 count_posi_num_ri += 1
                 pt1_sum_ri = sumMatrix(pt1_ri, pt1_sum_ri)
                 pt2_sum_ri = sumMatrix(pt2_ri, pt2_sum_ri)
 
             if theta_atan < -20.0 and theta_atan > -90.0:
-                # cv2.line(size_im, (x1+108, y1+240), (x2+108, y2+240), (0, 0, 255), 2)
+                # cv.line(size_im, (x1+108, y1+240), (x2+108, y2+240), (0, 0, 255), 2)
 
                 count_posi_num_le += 1
                 pt1_sum_le = sumMatrix(pt1_le, pt1_sum_le)
@@ -280,30 +280,30 @@ def lane_detectionv1(RGB_Camera_im):
         #################################################
         # lane painting
         # right-----------------------------------------------------------
-        # cv2.line(size_im, tuple(pt1_avg_ri), tuple(pt2_avg_ri), (0, 255, 0), 2) # right lane
-        cv2.line(size_im, tuple(pt1_avg_ri), tuple(pt2_fi_ri), (0, 255, 0), 2)  # right lane
+        # cv.line(size_im, tuple(pt1_avg_ri), tuple(pt2_avg_ri), (0, 255, 0), 2) # right lane
+        cv.line(size_im, tuple(pt1_avg_ri), tuple(pt2_fi_ri), (0, 255, 0), 2)  # right lane
         # left-----------------------------------------------------------
-        # cv2.line(size_im, tuple(pt1_avg_le), tuple(pt2_avg_le), (0, 255, 0), 2) # left lane
-        cv2.line(size_im, tuple(pt1_fi_le), tuple(pt2_avg_le), (0, 255, 0), 2)  # left lane
+        # cv.line(size_im, tuple(pt1_avg_le), tuple(pt2_avg_le), (0, 255, 0), 2) # left lane
+        cv.line(size_im, tuple(pt1_fi_le), tuple(pt2_avg_le), (0, 255, 0), 2)  # left lane
         # center-----------------------------------------------------------
-        cv2.line(size_im, (320, 480), (320, 360), (0, 228, 255), 1)  # middle lane
+        cv.line(size_im, (320, 480), (320, 360), (0, 228, 255), 1)  # middle lane
         #################################################
 
         #################################################
         # possible lane
         # FCP = np.array([pt1_avg_ri, pt2_avg_ri, pt1_avg_le, pt2_avg_le])
-        # cv2.fillConvexPoly(size_im, FCP, color=(255, 242, 213)) # BGR
+        # cv.fillConvexPoly(size_im, FCP, color=(255, 242, 213)) # BGR
         #################################################
         FCP_img = np.zeros(shape=(480, 640, 3), dtype=np.uint8) + 0
         # FCP = np.array([pt1_avg_ri, pt2_avg_ri, pt1_avg_le, pt2_avg_le])
         # FCP = np.array([(100,100), (100,200), (200,200), (200,100)])
         FCP = np.array([pt2_avg_le, pt1_fi_le, pt2_fi_ri, pt1_avg_ri])
-        cv2.fillConvexPoly(FCP_img, FCP, color=(255, 242, 213))  # BGR
+        cv.fillConvexPoly(FCP_img, FCP, color=(255, 242, 213))  # BGR
         alpha = 0.9
-        size_im = cv2.addWeighted(size_im, alpha, FCP_img, 1 - alpha, 0)
+        size_im = cv.addWeighted(size_im, alpha, FCP_img, 1 - alpha, 0)
 
         # alpha = 0.4
-        # size_im = cv2.addWeighted(size_im, alpha, FCP, 1 - alpha, 0)
+        # size_im = cv.addWeighted(size_im, alpha, FCP, 1 - alpha, 0)
         #################################################
 
         #################################################
@@ -321,14 +321,14 @@ def lane_detectionv1(RGB_Camera_im):
             lane_center_x_le = 0
 
         # caenter left lane (255, 90, 185)
-        cv2.line(size_im, (lane_center_x_le, lane_center_y_le - 10), (lane_center_x_le, lane_center_y_le + 10),
+        cv.line(size_im, (lane_center_x_le, lane_center_y_le - 10), (lane_center_x_le, lane_center_y_le + 10),
                  (0, 228, 255), 1)
         # caenter right lane
-        cv2.line(size_im, (lane_center_x_ri, lane_center_y_ri - 10), (lane_center_x_ri, lane_center_y_ri + 10),
+        cv.line(size_im, (lane_center_x_ri, lane_center_y_ri - 10), (lane_center_x_ri, lane_center_y_ri + 10),
                  (0, 228, 255), 1)
         # caenter middle lane
         lane_center_x = ((lane_center_x_ri - lane_center_x_le) // 2) + lane_center_x_le
-        cv2.line(size_im, (lane_center_x, lane_center_y_ri - 10), (lane_center_x, lane_center_y_le + 10),
+        cv.line(size_im, (lane_center_x, lane_center_y_ri - 10), (lane_center_x, lane_center_y_le + 10),
                  (0, 228, 255), 1)
 
         text_left = 'Turn Left'
@@ -336,17 +336,17 @@ def lane_detectionv1(RGB_Camera_im):
         text_center = 'Center'
         text_non = ''
         org = (320, 440)
-        font = cv2.FONT_HERSHEY_SIMPLEX
+        font = cv.FONT_HERSHEY_SIMPLEX
 
         if 0 < lane_center_x <= 318:
-            cv2.putText(size_im, text_left, org, font, 0.7, (0, 0, 255), 2)
+            cv.putText(size_im, text_left, org, font, 0.7, (0, 0, 255), 2)
         elif 318 < lane_center_x < 322:
             # elif lane_center_x > 318 and lane_center_x < 322 :
-            cv2.putText(size_im, text_center, org, font, 0.7, (0, 0, 255), 2)
+            cv.putText(size_im, text_center, org, font, 0.7, (0, 0, 255), 2)
         elif lane_center_x >= 322:
-            cv2.putText(size_im, text_right, org, font, 0.7, (0, 0, 255), 2)
+            cv.putText(size_im, text_right, org, font, 0.7, (0, 0, 255), 2)
         elif lane_center_x == 0:
-            cv2.putText(size_im, text_non, org, font, 0.7, (0, 0, 255), 2)
+            cv.putText(size_im, text_non, org, font, 0.7, (0, 0, 255), 2)
         #################################################
 
         global test_con
@@ -366,8 +366,8 @@ def lane_detectionv1(RGB_Camera_im):
         pt2_avg_le = (0, 0)
 
         return lines,size_im
-import cv2 as cv
-import numpy as np
+
+
 def do_canny(frame):
     # Converts frame to grayscale because we only need the luminance channel for detecting edges - less computationally expensive
     gray = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
@@ -454,7 +454,7 @@ font = cv.FONT_HERSHEY_SIMPLEX
 fontColor = (0, 0, 0)
 fontSize = 0.5
 def lane_detectionv2(RGB_Camera_im):
-    size_im = cv2.resize(RGB_Camera_im, dsize=(640, 480))  # VGA resolution
+    size_im = cv.resize(RGB_Camera_im, dsize=(640, 480))  # VGA resolution
 
     canny = do_canny(size_im)
     # cv.imshow("canny", canny)
@@ -487,22 +487,22 @@ def lane_detectionv2(RGB_Camera_im):
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
-import cv2
+
 def grayscale(img):
     """Applies the Grayscale transform
     This will return an image with only one color channel
     but NOTE: to see the returned image as grayscale
     (assuming your grayscaled image is called 'gray')
     you should call plt.imshow(gray, cmap='gray')"""
-    return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    # Or use BGR2GRAY if you read an image with cv2.imread()
-    # return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return cv.cvtColor(img, cv.COLOR_RGB2GRAY)
+    # Or use BGR2GRAY if you read an image with cv.imread()
+    # return cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 def canny(img, low_threshold, high_threshold):
     """Applies the Canny transform"""
-    return cv2.Canny(img, low_threshold, high_threshold)
+    return cv.Canny(img, low_threshold, high_threshold)
 def gaussian_blur(img, kernel_size):
     """Applies a Gaussian Noise kernel"""
-    return cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+    return cv.GaussianBlur(img, (kernel_size, kernel_size), 0)
 def region_of_interest(img, vertices):
     """
     Applies an image mask.
@@ -522,10 +522,10 @@ def region_of_interest(img, vertices):
         ignore_mask_color = 255
 
     # filling pixels inside the polygon defined by "vertices" with the fill color
-    cv2.fillPoly(mask, vertices, ignore_mask_color)
+    cv.fillPoly(mask, vertices, ignore_mask_color)
 
     # returning the image only where mask pixels are nonzero
-    masked_image = cv2.bitwise_and(img, mask)
+    masked_image = cv.bitwise_and(img, mask)
     return masked_image
 def draw_lines(img, lines, color=[255, 0, 0], thickness=8):
     """
@@ -589,7 +589,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=8):
 
         # extrapolate to the bottom
         xi = int((height - intercept) / slope)
-        cv2.line(img, (xi, height), (int(x2), int(y2)), color, thickness)
+        cv.line(img, (xi, height), (int(x2), int(y2)), color, thickness)
 
     # for right lines
     if right_lines:
@@ -600,14 +600,14 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=8):
         y2 = ymin
         x2 = int((y2 - intercept) / slope)
         xi = int((height - intercept) / slope)
-        cv2.line(img, (xi, height), (int(x2), int(y2)), [0, 0, 255], thickness)
+        cv.line(img, (xi, height), (int(x2), int(y2)), [0, 0, 255], thickness)
 def hough_lines(img, rho, theta, threshold=50, min_line_len=50, max_line_gap=100):
     """
     `img` should be the output of a Canny transform.
 
     Returns an image with hough lines drawn.
     """
-    lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
+    lines = cv.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
                             maxLineGap=max_line_gap)
     line_img = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
     draw_lines(line_img, lines)
@@ -624,7 +624,7 @@ def weighted_img(img, initial_img, α=0.8, β=1., γ=0.):
     initial_img * α + img * β + γ
     NOTE: initial_img and img must be the same shape!
     """
-    return cv2.addWeighted(initial_img, α, img, β, γ)
+    return cv.addWeighted(initial_img, α, img, β, γ)
 def process_image(image):
     # NOTE: The output you return should be a color image (3 channel) for processing video below
     # TODO: put your pipeline here,
@@ -640,7 +640,7 @@ def process_image(image):
     return img_hough,result
 
 def lane_detectionv3(RGB_Camera_im):
-    frame = cv2.resize(RGB_Camera_im, (1280, 720))
+    frame = cv.resize(RGB_Camera_im, (1280, 720))
     lines, size_im = process_image(frame)
 
     return lines, size_im
@@ -650,7 +650,6 @@ from imutils.video import FPS
 import numpy as np
 import argparse
 import imutils
-import cv2
 from pathlib import Path
 
 
@@ -682,14 +681,14 @@ def object_detection_SSD(RGB_Camera_im):
     COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
     # load our serialized model from disk
-    net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
+    net = cv.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
     # check if we are going to use GPU
     if args["use_gpu"]:
         # set CUDA as the preferable backend and target
         print("[INFO] setting preferable backend and target to CUDA...")
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+        net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
+        net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
     frame=RGB_Camera_im
 
@@ -697,7 +696,7 @@ def object_detection_SSD(RGB_Camera_im):
     # a blob
     frame = imutils.resize(frame, width=400)
     (h, w) = frame.shape[:2]
-    blob = cv2.dnn.blobFromImage(frame, 0.007843, (300, 300), 127.5)
+    blob = cv.dnn.blobFromImage(frame, 0.007843, (300, 300), 127.5)
 
     # pass the blob through the network and obtain the detections and
     # predictions
@@ -725,11 +724,11 @@ def object_detection_SSD(RGB_Camera_im):
                                          confidence * 100)
 
 
-            cv2.rectangle(frame, (startX, startY), (endX, endY),
+            cv.rectangle(frame, (startX, startY), (endX, endY),
                           COLORS[idx], 2)
             y = startY - 15 if startY - 15 > 15 else startY + 15
-            cv2.putText(frame, label, (startX, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+            cv.putText(frame, label, (startX, y),
+                        cv.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
     return 1,frame
 
 
@@ -768,14 +767,14 @@ def object_detection_Yolo(RGB_Camera_im):
 
     # load our YOLO object detector trained on COCO dataset (80 classes)
     print("[INFO] loading YOLO from disk...")
-    net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
+    net = cv.dnn.readNetFromDarknet(configPath, weightsPath)
 
     # check if we are going to use GPU
     if args["use_gpu"]:
         # set CUDA as the preferable backend and target
         print("[INFO] setting preferable backend and target to CUDA...")
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+        net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
+        net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
     # determine only the *output* layer names that we need from YOLO
     ln = net.getLayerNames()
@@ -794,7 +793,7 @@ def object_detection_Yolo(RGB_Camera_im):
     # construct a blob from the input frame and then perform a forward
     # pass of the YOLO object detector, giving us our bounding boxes
     # and associated probabilities
-    blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
+    blob = cv.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
                                  swapRB=True, crop=False)
     net.setInput(blob)
     layerOutputs = net.forward(ln)
@@ -839,7 +838,7 @@ def object_detection_Yolo(RGB_Camera_im):
 
     # apply non-maxima suppression to suppress weak, overlapping
     # bounding boxes
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"],
+    idxs = cv.dnn.NMSBoxes(boxes, confidences, args["confidence"],
                             args["threshold"])
 
     # ensure at least one detection exists
@@ -852,11 +851,11 @@ def object_detection_Yolo(RGB_Camera_im):
 
             # draw a bounding box rectangle and label on the frame
             color = [int(c) for c in COLORS[classIDs[i]]]
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+            cv.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             text = "{}: {:.4f}".format(LABELS[classIDs[i]],
                                        confidences[i])
-            cv2.putText(frame, text, (x, y - 5),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            cv.putText(frame, text, (x, y - 5),
+                        cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 
 
@@ -902,18 +901,18 @@ def object_detection_mask(RGB_Camera_im):
     # load our Mask R-CNN trained on the COCO dataset (90 classes)
     # from disk
     print("[INFO] loading Mask R-CNN from disk...")
-    net = cv2.dnn.readNetFromTensorflow(weightsPath, configPath)
+    net = cv.dnn.readNetFromTensorflow(weightsPath, configPath)
 
     # check if we are going to use GPU
     if args["use_gpu"]:
         # set CUDA as the preferable backend and target
         print("[INFO] setting preferable backend and target to CUDA...")
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+        net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
+        net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
 
     frame = RGB_Camera_im
 
-    blob = cv2.dnn.blobFromImage(frame, swapRB=True, crop=False)
+    blob = cv.dnn.blobFromImage(frame, swapRB=True, crop=False)
     net.setInput(blob)
     (boxes, masks) = net.forward(["detection_out_final",
                                   "detection_masks"])
@@ -943,8 +942,8 @@ def object_detection_mask(RGB_Camera_im):
             # the bounding box, and then finally threshold to create
             # a *binary* mask
             mask = masks[i, classID]
-            mask = cv2.resize(mask, (boxW, boxH),
-                              interpolation=cv2.INTER_CUBIC)
+            mask = cv.resize(mask, (boxW, boxH),
+                              interpolation=cv.INTER_CUBIC)
             mask = (mask > args["threshold"])
 
             # extract the ROI of the image but *only* extracted the
@@ -962,14 +961,14 @@ def object_detection_mask(RGB_Camera_im):
 
             # draw the bounding box of the instance on the frame
             color = [int(c) for c in color]
-            cv2.rectangle(frame, (startX, startY), (endX, endY),
+            cv.rectangle(frame, (startX, startY), (endX, endY),
                           color, 2)
 
             # draw the predicted label and associated probability of
             # the instance segmentation on the frame
             text = "{}: {:.4f}".format(LABELS[classID], confidence)
-            cv2.putText(frame, text, (startX, startY - 5),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            cv.putText(frame, text, (startX, startY - 5),
+                        cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         return 1, frame
 # ==============================================================================
@@ -1049,6 +1048,11 @@ class World(object):
         self._weather_index += -1 if reverse else 1
         self._weather_index %= len(self._weather_presets)
         preset = self._weather_presets[self._weather_index]
+        self.hud.notification('Weather: %s' % preset[1])
+        self.player.get_world().set_weather(preset[0])
+
+    def weather(self, index):
+        preset = self._weather_presets[index]
         self.hud.notification('Weather: %s' % preset[1])
         self.player.get_world().set_weather(preset[0])
 
@@ -1548,6 +1552,15 @@ class CameraManager(object):
         self.transform_index = (self.transform_index + 1) % len(self._camera_transforms)
         self.sensor.set_transform(self._camera_transforms[self.transform_index])
 
+    def get_camera(self):
+        print(self._camera_transforms)
+
+    def set_camera(self, index):
+        # self.set_sensor(index, notify=False, force_respawn=True)
+        self.transform_index = (self.transform_index + index) % len(self._camera_transforms)
+        self.sensor.set_transform(self._camera_transforms[self.transform_index])
+
+
     def set_sensor(self, index, notify=True):
         index = index % len(self.sensors)
         needs_respawn = True if self.index is None \
@@ -1655,6 +1668,10 @@ def game_loop(args):
 
         controller = KeyboardControl(world, args.autopilot)
 
+        # world.get_weathers()
+        # world.camera_manager.get_camera()
+        world.camera_manager.set_camera(1)
+        world.weather(0)
 
         clock = pygame.time.Clock()
         while True:
@@ -1682,7 +1699,7 @@ def game_loop(args):
 
 
             global Camera_image
-            RGB_Camera_im = cv2.cvtColor(Camera_image, cv2.COLOR_BGR2RGB)
+            RGB_Camera_im = cv.cvtColor(Camera_image, cv.COLOR_BGR2RGB)
 
             # Test lane dectection ,object detecion based on SSD, Yolo and Semantic Segmentation
             lines,size_im= lane_detectionv3(RGB_Camera_im)
@@ -1696,10 +1713,11 @@ def game_loop(args):
                     lines = [[0,0,0,0]]
             else:
 
-                cv2.imshow('frame_size_im', size_im)
-                cv2.waitKey(1)
-                # cv2.imshow("test_im", test_im) # original size image
-                # cv2.waitKey(1)
+                cv.imshow('frame_size_im', size_im)
+                if cv.waitKey(10) & 0xFF == ord('q'):
+                    break
+                # cv.imshow("test_im", test_im) # original size image
+                # cv.waitKey(1)
 
 
 
