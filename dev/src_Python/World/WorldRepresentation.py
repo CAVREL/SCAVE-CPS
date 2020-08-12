@@ -1,5 +1,5 @@
 class WorldRepresentation(object):
-    """ Class representing the surrounding environment from perception stack"""
+    """ Class representing the surrounding environment from perception stack """
 
     def __init__(self, carla_world, vehicle, args):
         """Constructor method"""
