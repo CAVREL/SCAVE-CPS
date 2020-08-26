@@ -2358,11 +2358,11 @@ class BasicAgent(Agent):
         test=WorldRepresentation(self._world, vehicle)
         self.counter += 1
 
-        # if ((self.counter % 100) == 0):
-        #     start_time = time.time()
-        #     print(test.dynamic_objects())
-        #     end_time=time.time()
-        #     print("--- %s seconds ---" % ( end_time- start_time))
+        if ((self.counter % 100) == 0):
+            start_time = time.time()
+            print(test.dynamic_objects())
+            end_time=time.time()
+            print("--- %s seconds ---" % ( end_time- start_time))
 ##########################################################3
         lights_list = actor_list.filter("*traffic_light*")
 
