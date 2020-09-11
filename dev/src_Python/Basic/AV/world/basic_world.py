@@ -18,7 +18,7 @@ class Vehicle():
 class WorldRepresentation(object):
     """ Class representing the surrounding environment from perception stack """
     def __index__(self,perception):
-        self.objects = None                 # type list ; list of 3D BBs (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
+        self.dynamic_objects = None                 # type list ; list of 3D BBs (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
         self.occupancy_grid  = None         # occupancy grid
         self.drivable_area = None           # grid of drivable area
 
@@ -53,7 +53,8 @@ class WorldRepresentation(object):
         self.ego_vehicle = perception.ego_vehicle
 
 
-        self.objects = perception.objects
+        self.dynamic_objects = perception.objects
+        self.static_objects = perception.objects
         self.lane_waypoint = perception.lane_waypoint
         self.drivable_area = perception.drivable_area
 
@@ -77,3 +78,22 @@ class WorldRepresentation(object):
         self.lead_car_pos = perception.lead_car_pos
         self.lead_car_length = perception.lead_car_length
         self.lead_car_speed = perception.lead_car_speed
+
+
+    def get_ego_vehicle(self):
+        return self.ego_vehicle
+
+    def get_lane_waypoints(self):
+        return self.lane_waypoint
+
+    def get_drivable_area(self):
+        return self.drivable_area
+
+    def get_current_timestamp(self):
+        return self.current_timestamp
+
+    def get_dynamic_objects(self):
+        return self.dynamic_objects
+
+    def get_static_objects(self):
+        return self.static_objects
