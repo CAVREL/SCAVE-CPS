@@ -45,15 +45,15 @@ PLAYER_START_INDEX = 1      # spawn index for player (keep to 1)
 
 
 
-WAYPOINTS_FILENAME = '/home/cavrel/PycharmProjects/Autonomous_Vehicle/Coursera AV/Carla/PythonClient/AV/simulation/course4_waypoints.txt'  # waypoint file to load
+WAYPOINTS_FILENAME = '/home/rodolfo/PycharmProjects/SCAVE-CPS/dev/src_Python/Basic/AV/simulation/course4_waypoints.txt'  # waypoint file to load
 DIST_THRESHOLD_TO_LAST_WAYPOINT = 2.0  # some distance from last position before
                                        # simulation ends
 
 
 # Course 4 specific parameters
-C4_STOP_SIGN_FILE        = '/home/cavrel/PycharmProjects/Autonomous_Vehicle/Coursera AV/Carla/PythonClient/AV/simulation/stop_sign_params.txt'
+C4_STOP_SIGN_FILE        = '/home/rodolfo/PycharmProjects/SCAVE-CPS/dev/src_Python/Basic/AV/simulation/stop_sign_params.txt'
 C4_STOP_SIGN_FENCELENGTH = 5        # m
-C4_PARKED_CAR_FILE       = '/home/cavrel/PycharmProjects/Autonomous_Vehicle/Coursera AV/Carla/PythonClient/AV/simulation/parked_vehicle_params.txt'
+C4_PARKED_CAR_FILE       = '/home/rodolfo/PycharmProjects/SCAVE-CPS/dev/src_Python/Basic/AV/simulation/parked_vehicle_params.txt'
 
 
 # Path interpolation parameters

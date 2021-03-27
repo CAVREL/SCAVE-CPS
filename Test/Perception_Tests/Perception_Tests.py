@@ -1643,7 +1643,7 @@ def game_loop(args):
 
     try:
         client = carla.Client(args.host, args.port)
-        client.set_timeout(2.0)
+        client.set_timeout(5.0)
 
         display = pygame.display.set_mode(
             (args.width, args.height),
@@ -1652,7 +1652,7 @@ def game_loop(args):
         hud = HUD(args.width, args.height)
 
         # Changing The Map
-        world = World(client.load_world('Town05'), hud, args.filter,
+        world = World(client.load_world('Town03'), hud, args.filter,
                       args.rolename)  # Town04 ,Town06 is highway | Town07 is country |Town03 default
 
         # weather = carla.WeatherParameters(
@@ -1703,9 +1703,9 @@ def game_loop(args):
 
             # Test lane dectection ,object detecion based on SSD, Yolo and Semantic Segmentation
             lines,size_im= lane_detectionv3(RGB_Camera_im)
-            #lines,size_im=object_detection_SSD(RGB_Camera_im)
-            #lines, size_im = object_detection_Yolo(RGB_Camera_im)
-            #lines, size_im = object_detection_mask(RGB_Camera_im)
+            # lines,size_im=object_detection_SSD(RGB_Camera_im)
+            # lines, size_im = object_detection_Yolo(RGB_Camera_im)
+            # lines, size_im = object_detection_mask(RGB_Camera_im)
             #lines, size_im = lane_detectionv2(RGB_Camera_im)
 
             if lines is None: #in case HoughLinesP fails to return a set of lines
